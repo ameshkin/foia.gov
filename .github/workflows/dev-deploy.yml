@@ -6,7 +6,7 @@ on:
 jobs:
   # Build for the Acquia Cloud development environment
   build:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-20.04
     steps:
       # Setting up node
       - uses: actions/checkout@v3
@@ -35,8 +35,8 @@ jobs:
       - name: Install SSH key
         uses: webfactory/ssh-agent@v0.7.0
         with:
-#          ssh-private-key: ${{ secrets.SSH_KEY }}
-          ssh-private-key: git@github.com:ameshkin/foia.gov.git
+          ssh-private-key: ${{ secrets.SSH_KEY }}
+          #ssh-private-key: git@github.com:ameshkin/foia.gov.git
       - name: Acquia known hosts
         run: |
           echo "${{ secrets.KNOWN_HOSTS }}" >> ~/.ssh/known_hosts
@@ -47,29 +47,6 @@ jobs:
       - name: Building front end site
         run: |
           make build
-      - name: Finished
-        run: echo "::notice Build is complete!"
-        # Saves the build files so they can be recalled in other jobs
-      - name: Set static folder to _site
-        uses: actions/upload-artifact@v3
-        with:
-          name: setsite
-          path: _site
-#        # attach_workspace from config.yml
-#      - name: attach_workspace
-#        uses: actions/download-artifact@v3
-#        with:
-#          name: setsite
-  # Test code will build again
-  test:
-    runs-on: ubuntu-22.04
-    steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
-      - name: Running tests
-        run: |
-          make test
-      - name: attach_workspace test
-        uses: actions/download-artifact@v3
-        with:
-          name: setsite
+      - name: Run tests
+        run: make test
+
